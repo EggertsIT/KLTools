@@ -12,76 +12,12 @@ $SQL_EN_md5 = "97957C331AB43EDF42E1F3575B5E4B45"
 $cLogFile ="C:\KSC_Inst\log.txt"
 
 
-#check if install dir exist
-if (!(Test-Path $installSoruce -PathType Container))
-{
-    New-Item -ItemType Directory -Force -Path $installSoruce
-    Add-Content -Path $cLogFile -Value "!! OK § $installSoruce Created"
-}
-else
-{
-   Add-Content -Path $cLogFile -Value "!! OK § $installSoruce allready exist"
-}
-
-#check if ksc file is present Start
-if (!(Test-Path $installSoruce\setup.zip))
-{
-    Invoke-WebRequest -Uri $ksc_EN -OutFile "$installSoruce\setup.zip"
-    $hashSrc = Get-FileHash "$installSoruce\setup.zip" -Algorithm "MD5"
-    If ($hashSrc.Hash -ne $KSC_EN_md5)
-    { Add-Content -Path $cLogFile -Value "!!Error § Source File Hash: $hashSrc does not equal expected File Hash: $KSC_EN_md5 --> the file is not valid. !! SETUP EXIT !!"
-    Exit 1
-    }
-}
-
-else
-{
-$hashSrc = Get-FileHash "$installSoruce\setup.zip" -Algorithm "MD5"
-If ($hashSrc.Hash -ne $KSC_EN_md5)
-{
-  Add-Content -Path $cLogFile -Value "!!Error § Source File Hash: $hashSrc does not equal expected File Hash: $KSC_EN_md5 --> the file is not valid."
-  Exit 1
-}
-  Add-Content -Path $cLogFile -Value "!! OK § Source File Hash: $hashSrc equal expected File Hash: $KSC_EN_md5 --> the file is valid."
-}
-#check if ksc file is present End
+$SQLinsts =
+@'
+/ConfigurationFile=C:\KSC_Inst\DBAConfigurationFile.ini /IACCEPTSQLSERVERLICENSETERMS /PID="11111-00000-00000-00000-00000" 
+'@
 
 
-#check if SQL files are present start
-if (!(Test-Path $installSoruce\SQLServer2019-x64-ENU.zip))
-{
-    Invoke-WebRequest -Uri $sql_Ex_dl -OutFile "$installSoruce\SQLServer2019-x64-ENU.zip"
-    $hashSrc = Get-FileHash "$installSoruce\setup.zip" -Algorithm "MD5"
-    If ($hashSrc.Hash -ne $SQL_EN_md5)
-    { Add-Content -Path $cLogFile -Value "!!Error § Source File Hash: $hashSrc does not equal expected File Hash: $SQL_EN_md5 --> the file is not valid. !! SETUP EXIT !!"
-    Exit 1
-    }
-}
-
-else
-{
-$hashSrc = Get-FileHash "$installSoruce\SQLServer2019-x64-ENU.zip" -Algorithm "MD5"
-If ($hashSrc.Hash -ne $SQL_EN_md5)
-{
-  Add-Content -Path $cLogFile -Value "!!Error § Source File Hash: $hashSrc does not equal expected File Hash: $SQL_EN_md5 --> the file is not valid."
-  Exit 1
-}
-  Add-Content -Path $cLogFile -Value "!! OK § Source File Hash: $hashSrc equal expected File Hash: $SQL_EN_md5 --> the file is valid."
-}
-#check if SQL files are present end
-
-#Extract SQL Server
-
-
-if (!(Test-Path $installSoruce\SQLServer2019-x64-ENU -PathType Container))
-{
-    Expand-Archive $installSoruce\SQLServer2019-x64-ENU.zip -DestinationPath $installSoruce\
-    Add-Content -Path $cLogFile -Value "!! OK § Sql Install files Created"
-}
-else
-{
-   Add-Content -Path $cLogFile -Value "!! OK § Sql Install files allready exist"
-}
 
 $SQLparams = @'
 
@@ -283,24 +219,117 @@ SQLMINMEMORY="0"
 '@ 
 
 
-#Add-Content -Path $installSoruce\DBAConfigurationFile.ini -Value $SQLparams
 
-
-if (!(Test-Path $installSoruce\DBAConfigurationFile.ini))
+#check if install dir exist
+if (!(Test-Path $installSoruce -PathType Container))
 {
-    Add-Content -Path $installSoruce\DBAConfigurationFile.ini -Value $SQLparams
-    Add-Content -Path $cLogFile -Value "!! OK § Sql INI files Created"
+    New-Item -ItemType Directory -Force -Path $installSoruce
+    Add-Content -Path $cLogFile -Value "!! OK § $installSoruce Created"
 }
 else
 {
-   Add-Content -Path $cLogFile -Value "!! OK § Sql INI files allready exist"
+   Add-Content -Path $cLogFile -Value "!! OK § $installSoruce allready exist"
+}
+
+#check if ksc file is present Start
+if (!(Test-Path $installSoruce\setup.zip))
+{
+    Invoke-WebRequest -Uri $ksc_EN -OutFile "$installSoruce\setup.zip"
+    $hashSrc = Get-FileHash "$installSoruce\setup.zip" -Algorithm "MD5"
+    If ($hashSrc.Hash -ne $KSC_EN_md5)
+    { Add-Content -Path $cLogFile -Value "!!Error § Source File Hash: $hashSrc does not equal expected File Hash: $KSC_EN_md5 --> the file is not valid. !! SETUP EXIT !!"
+    Exit 1
+    }
+}
+
+else
+{
+$hashSrc = Get-FileHash "$installSoruce\setup.zip" -Algorithm "MD5"
+If ($hashSrc.Hash -ne $KSC_EN_md5)
+{
+  Add-Content -Path $cLogFile -Value "!!Error § Source File Hash: $hashSrc does not equal expected File Hash: $KSC_EN_md5 --> the file is not valid."
+  Exit 1
+}
+  Add-Content -Path $cLogFile -Value "!! OK § Source File Hash: $hashSrc equal expected File Hash: $KSC_EN_md5 --> the file is valid."
+}
+#check if ksc file is present End
+
+
+#check if SQL files are present start
+if (!(Test-Path $installSoruce\SQLServer2019-x64-ENU.zip))
+{
+    Invoke-WebRequest -Uri $sql_Ex_dl -OutFile "$installSoruce\SQLServer2019-x64-ENU.zip"
+    $hashSrc = Get-FileHash "$installSoruce\setup.zip" -Algorithm "MD5"
+    If ($hashSrc.Hash -ne $SQL_EN_md5)
+    { Add-Content -Path $cLogFile -Value "!!Error § Source File Hash: $hashSrc does not equal expected File Hash: $SQL_EN_md5 --> the file is not valid. !! SETUP EXIT !!"
+    Exit 1
+    }
+}
+
+else
+{
+$hashSrc = Get-FileHash "$installSoruce\SQLServer2019-x64-ENU.zip" -Algorithm "MD5"
+If ($hashSrc.Hash -ne $SQL_EN_md5)
+{
+  Add-Content -Path $cLogFile -Value "!!Error § Source File Hash: $hashSrc does not equal expected File Hash: $SQL_EN_md5 --> the file is not valid."
+  Exit 1
+}
+  Add-Content -Path $cLogFile -Value "!! OK § Source File Hash: $hashSrc equal expected File Hash: $SQL_EN_md5 --> the file is valid."
+}
+#check if SQL files are present end
+
+#Extract SQL Server
+if (!(Test-Path $installSoruce\SQLServer2019-x64-ENU -PathType Container))
+{
+    Expand-Archive $installSoruce\SQLServer2019-x64-ENU.zip -DestinationPath $installSoruce\
+    Add-Content -Path $cLogFile -Value "!! OK § Sql Install files Created"
+}
+else
+{
+   Add-Content -Path $cLogFile -Value "!! OK § Sql Install files allready exist"
 }
 
 
 
-#Set-Location to where your SQL Setup.exe is located, then run:
+if ( !(Test-Path 'HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server'))
+    {
 
-$SQLinsts = @'
-/ConfigurationFile=C:\KSC_Inst\DBAConfigurationFile.ini /IACCEPTSQLSERVERLICENSETERMS /PID="11111-00000-00000-00000-00000" 
-'@ 
-Start-process C:\KSC_Inst\SQLServer2019-x64-ENU\SQLServer2019-x64-ENU\setup.exe $SQLinsts -wait
+    #Add-Content -Path $installSoruce\DBAConfigurationFile.ini -Value $SQLparams
+
+
+    if (!(Test-Path $installSoruce\DBAConfigurationFile.ini))
+    {
+        Add-Content -Path $installSoruce\DBAConfigurationFile.ini -Value $SQLparams
+        Add-Content -Path $cLogFile -Value "!! OK § Sql INI files Created"
+        
+    }
+    else
+    {
+       Add-Content -Path $cLogFile -Value "!! OK § Sql INI files allready exist"
+    }
+
+
+    #Set-Location to where your SQL Setup.exe is located, then run:
+
+
+    Start-process C:\KSC_Inst\SQLServer2019-x64-ENU\SQLServer2019-x64-ENU\setup.exe $SQLinsts -wait
+    $SQLinstRes = (Get-Content "C:\Program Files\Microsoft SQL Server\150\Setup Bootstrap\Log\Summary.txt" -TotalCount 6)
+
+    Add-Content -Path $cLogFile -Value "!! OK § Sql Setup Finished"
+    Add-Content -Path $cLogFile -Value "!! RESULT: $SQLinstRes "
+}
+else
+{
+
+if ((Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\" -Name "InstalledInstances") -ne "KASPERSKY_KSC" )
+{
+$Err_SQLSRV = (Get-ItemPropertyValue -Path "HKLM:\SOFTWARE\Microsoft\Microsoft SQL Server\" -Name "InstalledInstances")
+Add-Content -Path $cLogFile -Value "!! Error § Wrong Sql ($Err_SQLSRV) SERVER exist"
+exit 1
+} 
+else
+{Add-Content -Path $cLogFile -Value "!! Warning § Sql KASPERSKY_KSC exist"
+}
+}
+
+
