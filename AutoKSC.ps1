@@ -234,7 +234,8 @@ else
 #check if ksc file is present Start
 if (!(Test-Path $installSoruce\setup.zip))
 {
-    Invoke-WebRequest -Uri $ksc_EN -OutFile "$installSoruce\setup.zip"
+    $wc = New-Object net.webclient
+    $wc.Downloadfile($ksc_EN, $installSoruce\setup.zip )
     $1hashSrc = Get-FileHash "$installSoruce\setup.zip" -Algorithm "MD5"
     If ($1hashSrc.Hash -ne $KSC_EN_md5)
     { Add-Content -Path $cLogFile -Value "!!Error § Source File Hash: $1hashSrc does not equal expected File Hash: $KSC_EN_md5 --> the file is not valid. !! SETUP EXIT !!"
@@ -258,7 +259,8 @@ If ($1hashSrc.Hash -ne $KSC_EN_md5)
 #check if SQL files are present start
 if (!(Test-Path $installSoruce\SQLServer2019-x64-ENU.zip))
 {
-    Invoke-WebRequest -Uri $sql_Ex_dl -OutFile "$installSoruce\SQLServer2019-x64-ENU.zip"
+    $wc = New-Object net.webclient
+    $wc.Downloadfile($sql_Ex_dl, $installSoruce\SQLServer2019-x64-ENU.zip )
     $hashSrc3 = Get-FileHash "$installSoruce\SQLServer2019-x64-ENU.zip" -Algorithm "MD5"
     If ($hashSrc3.Hash -ne $SQL_EN_md5)
     { Add-Content -Path $cLogFile -Value "!!Error § Source File Hash: $hashSrc3 does not equal expected File Hash: $SQL_EN_md5 --> the file is not valid. !! SETUP EXIT !!"
