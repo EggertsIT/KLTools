@@ -1,0 +1,1 @@
+-NoExit invoke-Command –ComputerName <host_winname> –ScriptBlock { C:\Windows\system32\query.exe user /server:localhost ; echo "done" }  -Credential .
