@@ -1,0 +1,1 @@
+  -NoExit Enter-PSSession –ComputerName <host_winname> -Credential .
